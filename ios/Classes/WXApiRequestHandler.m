@@ -330,6 +330,7 @@
                        State:(NSString *)state
                       OpenID:(NSString *)openID
             InViewController:(UIViewController *)viewController
+                    delegate:(id)delegate
                   completion:(void (^ __nullable)(BOOL success))completion {
     SendAuthReq *req = [[SendAuthReq alloc] init];
     req.scope = scope; // @"post_timeline,sns"
@@ -339,7 +340,7 @@
 
     return [WXApi sendAuthReq:req
                viewController:viewController
-                     delegate:[FluwxResponseHandler defaultManager]
+                     delegate:delegate
                    completion:completion];
 }
 

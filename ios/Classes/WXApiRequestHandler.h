@@ -110,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
                        State:(NSString *)state
                       OpenID:(NSString *)openID
             InViewController:(UIViewController *)viewController
+                    delegate:(id)delegate
                   completion:(void (^ __nullable)(BOOL success))completion;
 
 + (void)sendAuthRequestScope:(NSString *)scope
