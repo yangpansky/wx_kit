@@ -6,8 +6,8 @@
 
 @interface FluwxPlugin ()
 // yangpan modify
-@property (nonatomic,strong) FluwxAuthHandler *_fluwxAuthHandler;
-@property (nonatomic,strong) FluwxShareHandler *_fluwxShareHandler;
+@property (nonatomic,strong) FluwxAuthHandler *fluwxAuthHandler;
+@property (nonatomic,strong) FluwxShareHandler *fluwxShareHandler;
 @end
 
 @implementation FluwxPlugin
@@ -25,8 +25,8 @@ FluwxResponseHandler *_responseHandler;
 // yangpan modify
     // FluwxPlugin *instance = [[FluwxPlugin alloc] initWithRegistrar:registrar methodChannel:channel];
     FluwxPlugin *instance = [self.class sharedInstance];
-    instance._fluwxAuthHandler = [[FluwxAuthHandler alloc] initWithRegistrar:registrar methodChannel:channel];
-    instance._fluwxShareHandler = [[FluwxShareHandler alloc] initWithRegistrar:registrar];
+    instance.fluwxAuthHandler = [[FluwxAuthHandler alloc] initWithRegistrar:registrar methodChannel:channel];
+    instance.fluwxShareHandler = [[FluwxShareHandler alloc] initWithRegistrar:registrar];
     _responseHandler = [[FluwxResponseHandler alloc] init];
     [_responseHandler setMethodChannel:channel];
     // [[FluwxResponseHandler defaultManager] setMethodChannel:channel];
@@ -74,11 +74,11 @@ FluwxResponseHandler *_responseHandler;
     } else if ([@"isWeChatInstalled" isEqualToString:call.method]) {
         [self checkWeChatInstallation:call result:result];
     } else if ([@"sendAuth" isEqualToString:call.method]) {
-        [self._fluwxAuthHandler handleAuth:call result:result];
+        [_fluwxAuthHandler handleAuth:call result:result];
     } else if ([@"authByQRCode" isEqualToString:call.method]) {
-        [self._fluwxAuthHandler authByQRCode:call result:result];
+        [_fluwxAuthHandler authByQRCode:call result:result];
     } else if ([@"stopAuthByQRCode" isEqualToString:call.method]) {
-        [self._fluwxAuthHandler stopAuthByQRCode:call result:result];
+        [_fluwxAuthHandler stopAuthByQRCode:call result:result];
     } else if ([@"openWXApp" isEqualToString:call.method]) {
         result(@([WXApi openWXApp]));
     } else if ([@"payWithFluwx" isEqualToString:call.method]) {
@@ -92,7 +92,7 @@ FluwxResponseHandler *_responseHandler;
     } else if ([@"autoDeduct" isEqualToString:call.method]) {
         [self handleAutoDeductWithCall:call result:result];
     } else if ([call.method hasPrefix:@"share"]) {
-        [self._fluwxShareHandler handleShare:call result:result];
+        [_fluwxShareHandler handleShare:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
