@@ -9,6 +9,7 @@ import android.net.Uri
 import android.text.TextUtils
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.jarvan.fluwx.FluwxPlugin
 import com.jarvan.fluwx.io.*
 import com.tencent.mm.opensdk.modelbase.BaseReq
 import com.tencent.mm.opensdk.modelmsg.*
@@ -97,6 +98,7 @@ internal interface FluwxShareHandler : CoroutineScope {
         msg.mediaObject = textObj
         val req = SendMessageToWX.Req()
         setCommonArguments(call, req, msg)
+        req.transaction = FluwxPlugin.buildTransaction("textShare")
         req.message = msg
         result.success(WXAPiHandler.wxApi?.sendReq(req))
     }
@@ -118,6 +120,7 @@ internal interface FluwxShareHandler : CoroutineScope {
 
             val req = SendMessageToWX.Req()
             setCommonArguments(call, req, msg)
+            req.transaction = FluwxPlugin.buildTransaction("miniProgramShare")
             req.message = msg
             sendRequestInMain(result, req)
         }
@@ -159,6 +162,7 @@ internal interface FluwxShareHandler : CoroutineScope {
 
             val req = SendMessageToWX.Req()
             setCommonArguments(call, req, msg)
+            req.transaction = FluwxPlugin.buildTransaction("imageShare")
             req.message = msg
 
             sendRequestInMain(result, req)
@@ -186,6 +190,7 @@ internal interface FluwxShareHandler : CoroutineScope {
 
             val req = SendMessageToWX.Req()
             setCommonArguments(call, req, msg)
+            req.transaction = FluwxPlugin.buildTransaction("musicShare")
             req.message = msg
             sendRequestInMain(result, req)
         }
@@ -208,6 +213,7 @@ internal interface FluwxShareHandler : CoroutineScope {
             msg.thumbData = readThumbnailByteArray(call)
             val req = SendMessageToWX.Req()
             setCommonArguments(call, req, msg)
+            req.transaction = FluwxPlugin.buildTransaction("videoShare")
             req.message = msg
 
             sendRequestInMain(result, req)
@@ -226,6 +232,7 @@ internal interface FluwxShareHandler : CoroutineScope {
             msg.thumbData = readThumbnailByteArray(call)
             val req = SendMessageToWX.Req()
             setCommonArguments(call, req, msg)
+            req.transaction = FluwxPlugin.buildTransaction("webShare")
             req.message = msg
             sendRequestInMain(result, req)
         }
@@ -259,6 +266,7 @@ internal interface FluwxShareHandler : CoroutineScope {
             msg.thumbData = readThumbnailByteArray(call)
             val req = SendMessageToWX.Req()
             setCommonArguments(call, req, msg)
+            req.transaction = FluwxPlugin.buildTransaction("fileShare")
             req.message = msg
             sendRequestInMain(result, req)
         }
@@ -286,7 +294,6 @@ internal interface FluwxShareHandler : CoroutineScope {
         msg.mediaTagName = call.argument("mediaTagName")
         msg.title = call.argument(keyTitle)
         msg.description = call.argument(keyDescription)
-        req.transaction = UUID.randomUUID().toString().replace("-", "")
         val sceneIndex = call.argument<Int?>("scene")
         req.scene = when (sceneIndex) {
             0 -> SendMessageToWX.Req.WXSceneSession

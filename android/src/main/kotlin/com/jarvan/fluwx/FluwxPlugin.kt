@@ -20,6 +20,8 @@ import io.flutter.plugin.common.PluginRegistry
 public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     companion object {
+        private const val kReqTransactionprefix = "kFluwxPluginTransactionPrefix"
+
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
             val channel = MethodChannel(registrar.messenger(), "com.jarvanmo/fluwx")
@@ -32,6 +34,16 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     permissionHandler = PermissionHandler(registrar.activity())
                 }
             })
+        }
+
+        fun buildTransaction(type: String?): String {
+            if (type == null)
+                return kReqTransactionprefix
+            return kReqTransactionprefix + "_" + type;
+        }
+
+        fun pluginTransaction(transaction: String): Boolean {
+            return transaction != null && transaction.startsWith(kReqTransactionprefix)
         }
     }
 
@@ -106,6 +118,7 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             request.sign = call.argument("sign")
             request.signType = call.argument("signType")
             request.extData = call.argument("extData")
+            request.transaction = buildTransaction("pay")
             val done = WXAPiHandler.wxApi?.sendReq(request)
             result.success(done)
         }
@@ -118,6 +131,7 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         request.queryInfo = hashMapOf(
                 "token" to prepayId
         )
+        request.transaction = buildTransaction("hongKongPay")
         result.success(WXAPiHandler.wxApi?.sendReq(request))
     }
 
@@ -150,6 +164,7 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 "timestamp" to timestamp,
                 "return_app" to returnApp
         )
+        req.transaction = buildTransaction("autoDeduct")
         result.success(WXAPiHandler.wxApi?.sendReq(req))
     }
 
@@ -164,6 +179,7 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         req.scene = scene!!
         req.reserved = reserved
         req.templateID = templateId
+        req.transaction = buildTransaction("subScribe")
         val b = WXAPiHandler.wxApi?.sendReq(req)
         result.success(b)
     }
@@ -178,13 +194,18 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             2 -> WXLaunchMiniProgram.Req.MINIPROGRAM_TYPE_PREVIEW
             else -> WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE
         }// 可选打开 开发版，体验版和正式版
+        req.transaction = buildTransaction("miniProgram")
         val done = WXAPiHandler.wxApi?.sendReq(req)
         result.success(WXAPiHandler.wxApi?.sendReq(req))
     }
 
     private fun openWXApp(result: MethodChannel.Result) = result.success(WXAPiHandler.wxApi?.openWXApp())
 
-    fun onWXResp(resp: BaseResp) {
-        FluwxResponseHandler.handleResponse(resp)
+    fun onWXResp(resp: BaseResp): Boolean {
+        if (resp != null && pluginTransaction(resp.transaction)){
+            FluwxResponseHandler.handleResponse(resp)
+            return true
+        }
+        return false
     }
 }

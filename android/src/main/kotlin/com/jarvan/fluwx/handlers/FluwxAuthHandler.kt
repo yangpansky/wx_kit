@@ -15,12 +15,14 @@
  */
 package com.jarvan.fluwx.handlers
 
+import com.jarvan.fluwx.FluwxPlugin
 import com.tencent.mm.opensdk.diffdev.DiffDevOAuthFactory
 import com.tencent.mm.opensdk.diffdev.OAuthErrCode
 import com.tencent.mm.opensdk.diffdev.OAuthListener
 import com.tencent.mm.opensdk.modelmsg.SendAuth
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.util.*
 
 internal class FluwxAuthHandler(private val methodChannel: MethodChannel) {
     //    private DiffDevOAuthFactory.getDiffDevOAuth()
@@ -53,6 +55,7 @@ internal class FluwxAuthHandler(private val methodChannel: MethodChannel) {
         val req = SendAuth.Req()
         req.scope = call.argument("scope")
         req.state = call.argument("state")
+        req.transaction = FluwxPlugin.buildTransaction("sendAuth")
         val openId = call.argument<String?>("openId")
         if (!openId.isNullOrBlank()) {
             req.openId = call.argument("openId")
