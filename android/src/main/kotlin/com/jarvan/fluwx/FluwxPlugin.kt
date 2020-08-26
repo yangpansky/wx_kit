@@ -40,10 +40,11 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         val channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.jarvanmo/fluwx")
-        channel.setMethodCallHandler(this)
         FluwxResponseHandler.setMethodChannel(channel)
-        authHandler = FluwxAuthHandler(channel)
-        shareHandler = FluwxShareHandlerEmbedding(flutterPluginBinding.flutterAssets, flutterPluginBinding.applicationContext)
+        WXAPiHandler.setContext(flutterPluginBinding.applicationContext)
+        channel.setMethodCallHandler(this)
+        this.authHandler = FluwxAuthHandler(channel)
+        this.shareHandler = FluwxShareHandlerEmbedding(flutterPluginBinding.flutterAssets, flutterPluginBinding.applicationContext)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
