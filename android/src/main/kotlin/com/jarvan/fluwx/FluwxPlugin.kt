@@ -2,6 +2,7 @@ package com.jarvan.fluwx
 
 import androidx.annotation.NonNull
 import com.jarvan.fluwx.handlers.*
+import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelbiz.SubscribeMessage
 import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram
 import com.tencent.mm.opensdk.modelbiz.WXOpenBusinessWebview
@@ -182,4 +183,8 @@ public class FluwxPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun openWXApp(result: MethodChannel.Result) = result.success(WXAPiHandler.wxApi?.openWXApp())
+
+    fun onWXResp(resp: BaseResp) {
+        FluwxResponseHandler.handleResponse(resp)
+    }
 }
